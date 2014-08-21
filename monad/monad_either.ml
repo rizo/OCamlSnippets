@@ -8,13 +8,21 @@ module EitherT = functor (L : Type) -> functor (M : Monad) -> struct
     let return a = M.return (Right a)
     let bind m f = M.bind m
       (fun e -> match e with
-      | Left e  -> return (Left e)
+      | Left e  -> M.return (Left e)
       | Right a -> f a
       )
+    let throwError e = M.return (Left e)
   end
-  open Monad
+  type 'a t = 'a Monad.t
+  let return : 'a -> 'a t
+             = Monad.return
+  let bind : 'a t -> ('a -> 'b t) -> 'b t
+           = Monad.bind
+  let throwError : L.t -> 'a M.t
+                 = Monad.throwError
 
-  let lift a = M.bind a (fun x -> return (Right x))
+  let lift (a : 'a M.t) : 'a t
+                        = M.bind a (fun x -> M.return (Right x))
 end
 
 let c = 0;;

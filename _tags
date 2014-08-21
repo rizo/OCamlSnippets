@@ -1,1 +1,3 @@
-<monad>: include
+<monad>:   include
+<minicpp>: include
+true:      use_menhir
